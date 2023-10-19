@@ -22,7 +22,26 @@ describe('GET /items',()=>{
     })
 })
 
+describe('POST /items', ()=>{
 
+    test('Creates new item and adds to fakeDB', async ()=>{
+        const resp = await request(app)
+        .post('/items')
+        .send({'item':{'name':'salt','price':1.50}})
+
+        expect(resp.body).toEqual({'added':{'name':'salt','price':1.50}})
+        expect(resp.statusCode).toBe(201)
+    })
+
+    test('Error thrown due to invalid request', async ()=>{
+        const resp = await request(app)
+        .post('/items')
+        .send({'item':{'name':'salt'}})
+
+        expect(resp.statusCode).toEqual(400)
+        expect(resp.body).toEqual({'error':{'message':'Invalid Request:Request body must have a JSON object named item with the keys of name and price', 'status':400}})
+    })
+})
 
 afterEach(()=>{
     items.length = 0
