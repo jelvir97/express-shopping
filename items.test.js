@@ -14,6 +14,16 @@ beforeEach(()=>{
     items.push(honey)
 })
 
+describe('GET /items',()=>{
+    test('Gets list of items',async ()=>{
+        const resp = await request(app).get('/items')
+        expect(resp.body).toEqual({items:[milk,honey]})
+        expect(resp.statusCode).toBe(200)
+    })
+})
+
+
+
 afterEach(()=>{
     items.length = 0
 })
