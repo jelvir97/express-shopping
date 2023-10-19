@@ -6,7 +6,7 @@ let items = require("./fakeDB");
 
 let milk = {'name': 'milk',
             'price': 3.00}
-let honey = {'name': 'milk',
+let honey = {'name': 'honey',
             'price': 5.75}      
             
 beforeEach(()=>{
@@ -40,6 +40,21 @@ describe('POST /items', ()=>{
 
         expect(resp.statusCode).toEqual(400)
         expect(resp.body).toEqual({'error':{'message':'Invalid Request:Request body must have a JSON object named item with the keys of name and price', 'status':400}})
+    })
+})
+
+describe('GET /items/:name',()=>{
+    test('Gets single item based off of name',async ()=>{
+        const resp = await request(app).get('/items/honey')
+        expect(resp.statusCode).toBe(200)
+        expect(resp.body).toEqual(honey)
+    })
+
+    test('Throws error, item not found', async ()=>{
+        const resp = await request(app).get('/items/notRealItem')
+
+        expect(resp.statusCode).toBe(404)
+        expect(resp.body).toEqual({'error':{'message':'Item not found', 'status':404}})
     })
 })
 
