@@ -88,6 +88,23 @@ describe('PATCH /items/:name', ()=>{
 
 })
 
+describe('DELETE /item/:name', ()=>{
+    test("Testing item deletion", async ()=>{
+        const resp = await request(app).delete('/items/milk')
+
+        expect(resp.statusCode).toBe(200)
+        expect(resp.body).toEqual({'message': 'Deleted'})
+        expect(items.length).toEqual(1)
+    })
+
+    test('Throws error, item not found', async ()=>{
+        const resp = await request(app).delete('/items/notRealItem')
+
+        expect(resp.statusCode).toBe(404)
+        expect(resp.body).toEqual({'error':{'message':'Item not found', 'status':404}})
+    })
+})
+
 afterEach(()=>{
     items.length = 0
 })
