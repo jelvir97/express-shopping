@@ -19,6 +19,7 @@ describe('GET /items',()=>{
         const resp = await request(app).get('/items')
         expect(resp.body).toEqual({items:[milk,honey]})
         expect(resp.statusCode).toBe(200)
+        expect(items.length).toEqual(2)
     })
 })
 
@@ -31,6 +32,7 @@ describe('POST /items', ()=>{
 
         expect(resp.body).toEqual({'added':{'name':'salt','price':1.50}})
         expect(resp.statusCode).toBe(201)
+        expect(items.length).toEqual(3)
     })
 
     test('Error thrown due to invalid request', async ()=>{
@@ -56,6 +58,34 @@ describe('GET /items/:name',()=>{
         expect(resp.statusCode).toBe(404)
         expect(resp.body).toEqual({'error':{'message':'Item not found', 'status':404}})
     })
+})
+
+describe('PATCH /items/:name', ()=>{
+    test('Updates item', async ()=>{
+        const resp = await request(app).patch('/items/milk')
+        .send({'item':{'name':'salt','price':3.00}})
+        
+        expect(resp.statusCode).toBe(200)
+        expect(resp.body).toEqual({'updated':{'name':'salt','price':3.00}})
+        expect(items.length).toEqual(2)
+    })
+
+    test('Throws error, item not found', async ()=>{
+        const resp = await request(app).patch('/items/notRealItem')
+        .send({'item':{'name':'salt','price':3.00}})
+
+        expect(resp.statusCode).toBe(404)
+        expect(resp.body).toEqual({'error':{'message':'Item not found', 'status':404}})
+    })
+
+    test('Error thrown due to invalid request', async ()=>{
+        const resp = await request(app).patch('/items/milk')
+        .send({'item':{'name':'salt'}})
+
+        expect(resp.statusCode).toEqual(400)
+        expect(resp.body).toEqual({'error':{'message':'Invalid Request:Request body must have a JSON object named item with the keys of name and price', 'status':400}})
+    })
+
 })
 
 afterEach(()=>{
